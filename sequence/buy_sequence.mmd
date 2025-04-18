@@ -1,0 +1,136 @@
+sequenceDiagram
+    participant Người dùng
+    participant Hệ thống
+    participant Cổng thanh toán
+    participant Vận chuyển
+    %% participant Email
+
+    Note over Người dùng,Vận chuyển: Bắt đầu quy trình mua hàng
+    
+    Người dùng->>Hệ thống: Truy cập website
+    Hệ thống-->>Người dùng: Hiển thị trang chủ/sản phẩm
+    
+    alt Chọn đăng nhập
+        Người dùng->>Hệ thống: Yêu cầu đăng nhập
+        Hệ thống-->>Người dùng: Hiển thị trang đăng nhập/đăng ký
+        Người dùng->>Hệ thống: Đăng nhập vào hệ thống
+        Hệ thống-->>Người dùng: Xác nhận đăng nhập thành công
+    end
+
+    Người dùng->>Hệ thống: Tìm kiếm sản phẩm
+    Hệ thống-->>Người dùng: Hiển thị danh sách sản phẩm
+    
+    Người dùng->>Hệ thống: Xem thông tin sản phẩm
+    Hệ thống-->>Người dùng: Hiển thị thông tin sản phẩm
+    
+    Người dùng->>Hệ thống: Thêm vào giỏ hàng
+    
+    alt Hết hàng
+        Hệ thống-->>Người dùng: Thông báo sản phẩm hết hàng
+    else Còn hàng
+        Hệ thống-->>Người dùng: Xác nhận thêm vào giỏ
+    end
+
+    Người dùng->>Hệ thống: Đi tới giỏ hàng và thanh toán
+    Hệ thống-->>Người dùng: Hiển thị thông tin đơn hàng
+    
+    alt Không đăng nhập (Mua hàng nhanh)
+        Hệ thống-->>Người dùng: Yêu cầu nhập thông tin giao hàng và liên hệ
+        Người dùng->>Hệ thống: Nhập thông tin giao hàng (Tên, SĐT, Email, Địa chỉ)
+        Hệ thống-->>Người dùng: Xác nhận thông tin và hiển thị lựa chọn thanh toán
+    else Đã đăng nhập
+        Hệ thống-->>Người dùng: Hiển thị thông tin giao hàng đã lưu
+        Người dùng->>Hệ thống: Xác nhận hoặc thay đổi thông tin
+        Hệ thống-->>Người dùng: Hiển thị lựa chọn thanh toán
+    end
+
+    Người dùng->>Hệ thống: Lựa chọn hình thức thanh toán
+    
+    alt Thanh toán trực tuyến
+        Hệ thống->>Cổng thanh toán: Xử lý thanh toán
+        
+        alt Thanh toán thất bại
+            Cổng thanh toán-->>Hệ thống: Thông báo lỗi thanh toán
+            Hệ thống-->>Người dùng: Thông báo lỗi và yêu cầu thử lại
+        else Thanh toán thành công
+            Cổng thanh toán-->>Hệ thống: Xác nhận thanh toán
+            Hệ thống-->>Người dùng: Thông báo thanh toán thành công
+        end
+        
+    else Thanh toán trực tiếp (COD)
+        Hệ thống-->>Người dùng: Xác nhận chọn COD
+    end
+
+    Hệ thống-->>Người dùng: Hiển thị chi tiết đơn hàng
+    Hệ thống->>Người dùng: Gửi email xác nhận đơn hàng
+
+    alt Hủy đơn (Trong khoảng thời gian cho phép)
+        Người dùng->>Hệ thống: Yêu cầu hủy đơn hàng
+        
+        alt Không đăng nhập
+            Hệ thống-->>Người dùng: Yêu cầu nhập mã đơn hàng và email xác nhận
+            Người dùng->>Hệ thống: Nhập thông tin xác nhận
+        end
+        
+        Hệ thống->>Người dùng: Yêu cầu lý do hủy đơn
+        Người dùng->>Hệ thống: Nhập lý do hủy và xác nhận hủy đơn hàng
+        
+        alt Đã thanh toán online
+            Hệ thống->>Cổng thanh toán: Yêu cầu hoàn tiền
+            Cổng thanh toán-->>Hệ thống: Xác nhận & gửi trạng thái hoàn tiền
+            Hệ thống-->>Người dùng: Thông báo trạng thái hoàn tiền
+            Cổng thanh toán-->>Người dùng: Hoàn tiền
+        end
+        
+        Hệ thống->>Người dùng: Gửi email xác nhận hủy đơn
+    end
+
+    Hệ thống->>Vận chuyển: Yêu cầu vận đơn
+    Vận chuyển-->>Hệ thống: Trả về thông tin vận đơn
+    Hệ thống-->>Người dùng: Hiển thị chi tiết vận đơn
+    
+    Note over Người dùng,Vận chuyển: Quá trình vận chuyển
+    
+    loop Cập nhật trạng thái
+        Vận chuyển->>Hệ thống: Cập nhật trạng thái đơn hàng
+        Hệ thống-->>Người dùng: Thông báo cập nhật trạng thái
+    end
+
+    alt COD
+        Vận chuyển->>Người dùng: Vận chuyển đơn hàng
+        
+        alt Giao hàng thành công
+            Người dùng->>Vận chuyển: Trả tiền sau khi nhận hàng
+            Vận chuyển->>Hệ thống: Xác nhận giao hàng và thanh toán thành công
+        else Từ chối nhận hàng
+            Người dùng->>Vận chuyển: Từ chối nhận hàng
+            Vận chuyển->>Hệ thống: Thông báo giao hàng thất bại
+        end
+        
+    else Online Payment
+        Vận chuyển->>Người dùng: Vận chuyển đơn hàng (đã thanh toán)
+        
+        alt Giao hàng thành công
+            Vận chuyển->>Hệ thống: Xác nhận giao hàng thành công
+        else Từ chối nhận hàng
+            Người dùng->>Vận chuyển: Từ chối nhận hàng
+            Vận chuyển->>Hệ thống: Thông báo giao hàng thất bại
+            Hệ thống->>Cổng thanh toán: Xử lý hoàn tiền
+        end
+    end
+    
+    alt Giao hàng thành công
+        Hệ thống-->>Người dùng: Thông báo giao hàng thành công
+        Hệ thống->>Người dùng: Gửi email xác nhận giao hàng
+        
+        alt Đã đăng nhập
+            Note over Người dùng,Hệ thống: Sau khi nhận hàng
+            Người dùng->>Hệ thống: Đánh giá sản phẩm
+            Hệ thống-->>Người dùng: Xác nhận đánh giá
+        end
+        
+        alt Trả/Đổi hàng
+            Người dùng->>Hệ thống: Yêu cầu trả/đổi hàng
+            Hệ thống-->>Người dùng: Hướng dẫn quy trình trả/đổi hàng
+        end
+    end
