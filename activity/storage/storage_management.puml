@@ -1,0 +1,20 @@
+@startuml Inventory Management
+|Hệ thống (System)|
+|Quản lý kho (Warehouse Manager)|
+
+start
+|Hệ thống (System)|
+:Kiểm tra ngưỡng tồn kho;
+
+if (Dưới ngưỡng tối thiểu?) then (Có)
+  :Tạo cảnh báo hàng sắp hết;
+  
+  |Quản lý kho (Warehouse Manager)|
+  :Nhận cảnh báo hàng sắp hết;
+  :Lập đơn đặt hàng mới;
+endif
+
+|Hệ thống (System)|
+:Cập nhật báo cáo tồn kho;
+stop
+@enduml

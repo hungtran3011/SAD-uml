@@ -1,0 +1,20 @@
+@startuml Order Fulfillment
+|Nhân viên kho (Warehouse Staff)|
+|Hệ thống (System)|
+
+start
+|Nhân viên kho (Warehouse Staff)|
+:Nhận đơn hàng cần xuất kho;
+:Tìm vị trí sản phẩm theo hướng dẫn;
+:Lấy hàng và quét mã xác nhận;
+
+|Hệ thống (System)|
+:Cập nhật số lượng tồn kho;
+:Gửi xác nhận sản phẩm đã xuất kho;
+:Cập nhật trạng thái đơn hàng;
+
+|Nhân viên kho (Warehouse Staff)|
+:Đóng gói sản phẩm;
+:Chuyển cho bộ phận vận chuyển;
+stop
+@enduml
