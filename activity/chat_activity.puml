@@ -1,0 +1,85 @@
+@startuml Chat with Customer Service
+
+|Người dùng (Customer)|
+start
+:Truy cập trang web/ứng dụng;
+:Chọn biểu tượng "Chat với CSKH";
+
+|Hệ thống (System)|
+:Hiển thị cửa sổ chat;
+:Tạo phiên chat mới;
+fork
+  :Gửi thông báo đến nhân viên CSKH;
+fork again
+  :Hiển thị tin nhắn chào mừng tự động;
+end fork
+
+|Nhân viên CSKH (Staff)|
+:Nhận thông báo có khách hàng mới;
+:Chấp nhận cuộc trò chuyện;
+:Gửi tin nhắn chào hỏi;
+
+|Hệ thống (System)|
+:Chuyển tin nhắn;
+
+|Người dùng (Customer)|
+:Nhận tin nhắn từ nhân viên;
+
+repeat
+  |Người dùng (Customer)|
+  :Soạn và gửi tin nhắn;
+  
+  |Hệ thống (System)|
+  :Xử lý và chuyển tin nhắn;
+  
+  |Nhân viên CSKH (Staff)|
+  :Nhận tin nhắn từ khách hàng;
+  :Soạn và gửi phản hồi;
+  
+  |Hệ thống (System)|
+  :Xử lý và chuyển tin nhắn phản hồi;
+  
+  |Người dùng (Customer)|
+  :Nhận phản hồi từ nhân viên;
+
+  |Người dùng (Customer)|
+  if (Muốn tiếp tục trò chuyện?) then (Có)
+    :Tiếp tục cuộc trò chuyện;
+  else (Không)
+    :Chọn kết thúc cuộc trò chuyện;
+    |Hệ thống (System)|
+    :Thông báo kết thúc đến nhân viên;
+    :Lưu lịch sử cuộc trò chuyện;
+    break
+    |Hệ thống (System)|
+    stop
+  endif
+  
+  |Nhân viên CSKH (Staff)|
+  if (Cần kết thúc cuộc trò chuyện?) then (Có)
+    :Chọn kết thúc cuộc trò chuyện;
+    |Hệ thống (System)|
+    :Thông báo kết thúc đến khách hàng;
+    :Lưu lịch sử cuộc trò chuyện;
+    |Hệ thống (System)|
+    stop
+    break
+  else (Không)
+    :Tiếp tục cuộc trò chuyện;
+  endif
+repeat while (Cuộc trò chuyện đang diễn ra)
+
+|Hệ thống (System)|
+:Gửi khảo sát đánh giá dịch vụ;
+
+|Người dùng (Customer)|
+:Gửi đánh giá (không bắt buộc);
+
+|Hệ thống (System)|
+:Lưu đánh giá nếu có;
+:Đóng phiên chat;
+
+|Người dùng (Customer)|
+stop
+
+@enduml
