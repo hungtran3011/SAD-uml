@@ -1,0 +1,28 @@
+@startuml Inventory Audit
+|Nhân viên kho (Warehouse Staff)|
+|Hệ thống (System)|
+|Quản lý kho (Warehouse Manager)|
+
+start
+|Quản lý kho (Warehouse Manager)|
+:Lên lịch kiểm kê định kỳ;
+
+|Nhân viên kho (Warehouse Staff)|
+:Tiến hành kiểm kê;
+:Báo cáo kết quả kiểm kê;
+
+|Hệ thống (System)|
+:So sánh số liệu thực tế với hệ thống;
+
+if (Có sai lệch?) then (Có)
+  :Tạo báo cáo sai lệch;
+  
+  |Quản lý kho (Warehouse Manager)|
+  :Xem xét và điều chỉnh sai lệch;
+  :Phê duyệt điều chỉnh;
+  
+  |Hệ thống (System)|
+  :Cập nhật số liệu tồn kho;
+endif
+stop
+@enduml
