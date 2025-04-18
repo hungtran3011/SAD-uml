@@ -7,9 +7,6 @@ sequenceDiagram
 
     Note over Người dùng,Vận chuyển: Bắt đầu quy trình mua hàng
     
-    Người dùng->>Hệ thống: Truy cập website
-    Hệ thống-->>Người dùng: Hiển thị trang chủ/sản phẩm
-    
     alt Chọn đăng nhập
         Người dùng->>Hệ thống: Yêu cầu đăng nhập
         Hệ thống-->>Người dùng: Hiển thị trang đăng nhập/đăng ký
@@ -17,10 +14,7 @@ sequenceDiagram
         Hệ thống-->>Người dùng: Xác nhận đăng nhập thành công
     end
 
-    Người dùng->>Hệ thống: Tìm kiếm sản phẩm
-    Hệ thống-->>Người dùng: Hiển thị danh sách sản phẩm
-    
-    Người dùng->>Hệ thống: Xem thông tin sản phẩm
+    Người dùng->>Hệ thống: Tìm kiếm và xem sản phẩm
     Hệ thống-->>Người dùng: Hiển thị thông tin sản phẩm
     
     Người dùng->>Hệ thống: Thêm vào giỏ hàng
