@@ -1,0 +1,48 @@
+@startuml E-commerce Use Case Diagram
+
+left to right direction
+skinparam linetype ortho
+
+' Define actors
+:Người dùng: as User
+:Ngân hàng / Ví điện tử: as Bank
+:Nhân sự: as Staff
+:Quản trị viên / Chủ cửa hàng: as Admin
+:Nhân viên bán hàng: as SalesStaff
+
+' Define the system boundary
+rectangle {
+  usecase "Tìm kiếm sản phẩm" as Search
+  usecase "Mua sản phẩm" as Buy
+  usecase "Đánh giá sản phẩm" as Rate
+  usecase "Chat với nhân viên\nchăm sóc khách hàng" as Chat
+  usecase "Chỉnh sửa thông tin\nngười dùng" as EditProfile
+  usecase "Thanh toán trực tuyến" as Payment
+  usecase "Quản lý thông tin hàng hóa" as ManageProducts
+  usecase "Quản lý đơn hàng" as ManageOrders
+  usecase "Quản lý nhân sự" as ManageStaff
+  usecase "Thống kê doanh số" as Statistics
+}
+
+' Define relationships
+User - Search
+User - Buy
+User - Rate
+User - Chat
+User - EditProfile
+
+Bank - Payment
+
+Staff - ManageOrders
+
+Staff - ManageProducts
+Admin - ManageStaff
+Staff - Statistics
+
+Payment <.. Buy : <<extend>>
+Payment - Bank
+
+Staff <|-- Admin : <<abstract>>
+Staff <|-- SalesStaff : <<abstract>>
+
+@enduml

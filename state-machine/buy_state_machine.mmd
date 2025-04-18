@@ -1,0 +1,59 @@
+stateDiagram-v2
+    [*] --> Giỏ_hàng: Thêm sản phẩm
+
+    state Giỏ_hàng {
+        [*] --> Chờ_thanh_toán
+        Chờ_thanh_toán --> [*]: Hủy giỏ hàng
+    }
+    
+    Giỏ_hàng --> Đang_xử_lý: Xác nhận đặt hàng
+    
+    state Đang_xử_lý {
+        [*] --> Chờ_xác_nhận
+        Chờ_xác_nhận --> Đã_xác_nhận: Xác nhận đơn
+    }
+    
+    state Đang_thanh_toán {
+        [*] --> Chờ_thanh_toán_online: Chọn thanh toán online
+        Chờ_thanh_toán_online --> Thanh_toán_thành_công: Xác nhận từ cổng thanh toán
+        Chờ_thanh_toán_online --> Thanh_toán_thất_bại: Lỗi thanh toán
+        Thanh_toán_thất_bại --> Chờ_thanh_toán_online: Thử lại
+    }
+    
+    Đang_xử_lý --> Đang_thanh_toán: Chọn thanh toán online
+    Đang_xử_lý --> Đang_vận_chuyển: Chọn COD
+    Đang_thanh_toán --> Đang_vận_chuyển: Sau khi thanh toán thành công
+    
+    state Đang_vận_chuyển {
+        [*] --> Đang_chuẩn_bị_hàng
+        Đang_chuẩn_bị_hàng --> Đang_giao_hàng: Bàn giao cho vận chuyển
+    }
+    
+    Đang_vận_chuyển --> Giao_thành_công: Xác nhận giao hàng
+    
+    state Đã_hoàn_thành {
+        [*] --> Chờ_đánh_giá
+        Chờ_đánh_giá --> Đã_đánh_giá: Người dùng đánh giá
+    }
+    
+    Giao_thành_công --> Đã_hoàn_thành: Sau khi nhận hàng
+    
+    Giỏ_hàng --> Bị_hủy: Người dùng hủy
+    Đang_xử_lý --> Bị_hủy: Hủy đơn
+    Đang_vận_chuyển --> Bị_hủy: Từ chối nhận hàng
+    
+    Đang_vận_chuyển --> Trả_hàng: Yêu cầu đổi trả
+    
+    state Trả_hàng {
+        [*] --> Chờ_duyệt
+        Chờ_duyệt --> Đã_duyệt: Xác nhận
+        Chờ_duyệt --> Từ_chối: Từ chối yêu cầu
+    }
+    
+    Trả_hàng --> Đang_hoàn_tiền: Sau khi xác nhận
+    Bị_hủy --> Đang_hoàn_tiền: Đã thanh toán online
+    Đang_hoàn_tiền --> Đã_hoàn_tiền: Xác nhận từ cổng thanh toán
+
+    Đã_hoàn_tiền --> [*]
+    Đã_hoàn_thành --> [*]
+    Bị_hủy --> [*]: Không cần hoàn tiền
