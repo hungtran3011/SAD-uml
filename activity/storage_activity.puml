@@ -1,0 +1,97 @@
+@startuml Storage Management Process
+
+|Nhân viên kho (Warehouse Staff)|
+|Hệ thống (System)|
+|Quản lý kho (Warehouse Manager)|
+
+|Nhân viên kho (Warehouse Staff)|
+start
+:Tiếp nhận hàng mới;
+:Kiểm tra số lượng và chất lượng;
+
+if (Hàng đạt yêu cầu?) then (Có)
+  :Quét mã sản phẩm;
+  
+  |Hệ thống (System)|
+  :Xác thực mã sản phẩm;
+  
+  if (Sản phẩm đã tồn tại?) then (Có)
+    :Cập nhật số lượng tồn kho;
+  else (Không)
+    :Tạo mã SKU mới;
+    :Thêm sản phẩm vào cơ sở dữ liệu;
+  endif
+  
+  :Gợi ý vị trí lưu trữ tối ưu;
+  
+  |Nhân viên kho (Warehouse Staff)|
+  :Đặt sản phẩm vào vị trí được gợi ý;
+  :Xác nhận vị trí lưu trữ;
+  
+  |Hệ thống (System)|
+  :Cập nhật vị trí lưu trữ trong hệ thống;
+  :Gửi thông báo cập nhật kho thành công;
+  
+else (Không)
+  |Nhân viên kho (Warehouse Staff)|
+  :Lập biên bản sản phẩm lỗi/không đạt;
+  :Thông báo cho nhà cung cấp;
+  
+  |Quản lý kho (Warehouse Manager)|
+  :Xử lý yêu cầu trả hàng;
+endif
+
+|Hệ thống (System)|
+:Kiểm tra ngưỡng tồn kho;
+
+if (Dưới ngưỡng tối thiểu?) then (Có)
+  :Tạo cảnh báo hàng sắp hết;
+  
+  |Quản lý kho (Warehouse Manager)|
+  :Nhận cảnh báo hàng sắp hết;
+  :Lập đơn đặt hàng mới;
+endif
+
+|Hệ thống (System)|
+:Cập nhật báo cáo tồn kho;
+
+|Quản lý kho (Warehouse Manager)|
+repeat
+  :Lên lịch kiểm kê định kỳ;
+  
+  |Nhân viên kho (Warehouse Staff)|
+  :Tiến hành kiểm kê;
+  :Báo cáo kết quả kiểm kê;
+  
+  |Hệ thống (System)|
+  :So sánh số liệu thực tế với hệ thống;
+  
+  if (Có sai lệch?) then (Có)
+    :Tạo báo cáo sai lệch;
+    
+    |Quản lý kho (Warehouse Manager)|
+    :Xem xét và điều chỉnh sai lệch;
+    :Phê duyệt điều chỉnh;
+    
+    |Hệ thống (System)|
+    :Cập nhật số liệu tồn kho;
+  endif
+repeat while (Theo lịch kiểm kê) is (Định kỳ)
+
+|Nhân viên kho (Warehouse Staff)|
+:Nhận đơn hàng cần xuất kho;
+:Tìm vị trí sản phẩm theo hướng dẫn;
+:Lấy hàng và quét mã xác nhận;
+
+|Hệ thống (System)|
+:Cập nhật số lượng tồn kho;
+:Gửi xác nhận sản phẩm đã xuất kho;
+:Cập nhật trạng thái đơn hàng;
+
+|Nhân viên kho (Warehouse Staff)|
+:Đóng gói sản phẩm;
+:Chuyển cho bộ phận vận chuyển;
+
+stop
+
+@enduml

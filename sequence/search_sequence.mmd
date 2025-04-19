@@ -1,0 +1,25 @@
+sequenceDiagram
+    actor NguoiDung as Người dùng
+    participant GiaoDien as Giao diện Tìm kiếm
+    participant DichVu as Dịch vụ Tìm kiếm
+    participant CSDL as Cơ sở dữ liệu Sản phẩm
+
+    NguoiDung->>GiaoDien: Nhập tiêu chí tìm kiếm
+    GiaoDien->>DichVu: Gửi yêu cầu tìm kiếm
+    DichVu->>CSDL: Truy vấn sản phẩm
+    CSDL-->>DichVu: Trả về sản phẩm phù hợp
+    DichVu->>DichVu: Xử lý kết quả
+    DichVu-->>GiaoDien: Trả về kết quả đã định dạng
+    GiaoDien-->>NguoiDung: Hiển thị kết quả tìm kiếm
+    
+    alt Không tìm thấy kết quả
+        GiaoDien-->>NguoiDung: Hiển thị thông báo "Không tìm thấy sản phẩm"
+        NguoiDung->>GiaoDien: Chỉnh sửa tiêu chí tìm kiếm
+    else Tìm thấy kết quả
+        NguoiDung->>GiaoDien: Chọn sản phẩm từ kết quả
+        GiaoDien->>DichVu: Yêu cầu chi tiết sản phẩm
+        DichVu->>CSDL: Lấy chi tiết sản phẩm
+        CSDL-->>DichVu: Trả về chi tiết sản phẩm
+        DichVu-->>GiaoDien: Gửi chi tiết sản phẩm
+        GiaoDien-->>NguoiDung: Hiển thị chi tiết sản phẩm
+    end

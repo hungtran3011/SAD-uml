@@ -1,0 +1,121 @@
+erDiagram
+    USER {
+        ObjectId _id PK
+        string name
+        string email
+        string phoneNumber
+        object address
+        string role
+        boolean isRegistered
+        string password
+        date createdAt
+        date updatedAt
+    }
+    
+    USER_IMAGE {
+        ObjectId _id PK
+        ObjectId user FK
+        string imageUrl
+        date createdAt
+        date updatedAt
+    }
+    
+    CATEGORY {
+        ObjectId _id PK
+        string name
+        string description
+        array fields
+        ObjectId createdBy FK
+    }
+    
+    FIELD_DEFINITION {
+        string name
+        string type
+        boolean required
+    }
+    
+    PRODUCT {
+        ObjectId _id PK
+        string name
+        string description
+        number price
+        ObjectId category FK
+        array fieldValues
+        ObjectId createdBy FK
+        date createdAt
+        date updatedAt
+    }
+    
+    PRODUCT_FIELD_VALUE {
+        string name
+        mixed value
+    }
+    
+    CART {
+        ObjectId _id PK
+        array items
+        ObjectId user FK
+        date createdAt
+        date updatedAt
+    }
+    
+    CART_ITEM {
+        ObjectId product FK
+        number quantity
+    }
+    
+    ORDER {
+        ObjectId _id PK
+        array items
+        ObjectId user FK
+        string status
+        object shippingAddress
+        object paymentDetails
+        number totalAmount
+        date createdAt
+        date updatedAt
+    }
+    
+    ORDER_ITEM {
+        ObjectId product FK
+        number quantity
+        string voucher
+        string note
+        number unitPrice
+        date deliveryDate
+        number deliveryFee
+    }
+    
+    STORAGE {
+        ObjectId _id PK
+        array items
+        date createdAt
+        date updatedAt
+    }
+    
+    STORAGE_ITEM {
+        ObjectId product FK
+        number quantity
+        date createdAt
+        date updatedAt
+    }
+
+    USER ||--o{ USER_IMAGE : "has"
+    USER ||--o{ PRODUCT : "creates"
+    USER ||--o{ CATEGORY : "creates"
+    USER ||--o{ ORDER : "places"
+    USER ||--o{ CART : "has"
+    
+    CATEGORY ||--o{ PRODUCT : "categorizes"
+    CATEGORY }o--|| FIELD_DEFINITION : "contains"
+    
+    PRODUCT ||--o{ PRODUCT_FIELD_VALUE : "has"
+    PRODUCT ||--o{ CART_ITEM : "referenced in"
+    PRODUCT ||--o{ ORDER_ITEM : "referenced in"
+    PRODUCT ||--o{ STORAGE_ITEM : "stored as"
+    
+    CART ||--o{ CART_ITEM : "contains"
+    
+    ORDER ||--o{ ORDER_ITEM : "contains"
+    
+    STORAGE ||--o{ STORAGE_ITEM : "contains"
