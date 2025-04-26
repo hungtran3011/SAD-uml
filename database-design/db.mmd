@@ -10,15 +10,10 @@ erDiagram
         string password
         date createdAt
         date updatedAt
+        string profileImage
     }
-    
-    USER_IMAGE {
-        ObjectId _id PK
-        ObjectId user FK
-        string imageUrl
-        date createdAt
-        date updatedAt
-    }
+
+    ADMIN
     
     CATEGORY {
         ObjectId _id PK
@@ -100,12 +95,24 @@ erDiagram
         date updatedAt
     }
 
-    USER ||--o{ USER_IMAGE : "has"
-    USER ||--o{ PRODUCT : "creates"
-    USER ||--o{ CATEGORY : "creates"
+    VOUCHER {
+        ObjectId _id PK
+        string name
+        string description
+        number discount
+        date startDate
+        date endDate
+        ObjectId createdBy FK
+    }
+
+    ADMIN ||--|| USER: "is a"
+
+    ADMIN ||--o{ PRODUCT : "manages"
+    ADMIN ||--o{ CATEGORY : "manages"
+    ADMIN ||--o{ STORAGE : "manages"
+    
     USER ||--o{ ORDER : "places"
     USER ||--o{ CART : "has"
-    
     CATEGORY ||--o{ PRODUCT : "categorizes"
     CATEGORY }o--|| FIELD_DEFINITION : "contains"
     
@@ -119,3 +126,6 @@ erDiagram
     ORDER ||--o{ ORDER_ITEM : "contains"
     
     STORAGE ||--o{ STORAGE_ITEM : "contains"
+    VOUCHER ||--o{ ORDER_ITEM : "applies to"
+    VOUCHER ||--o{ USER : "granted to"
+    VOUCHER ||--o{ PRODUCT : "applies to"
