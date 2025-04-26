@@ -1,0 +1,42 @@
+@startuml Receiving Process
+|Nhân viên kho (Warehouse Staff)|
+|Hệ thống (System)|
+|Quản lý kho (Warehouse Manager)|
+
+|Nhân viên kho (Warehouse Staff)|
+start
+:Tiếp nhận hàng mới;
+:Kiểm tra số lượng và chất lượng;
+
+if (Hàng đạt yêu cầu?) then (Có)
+  :Quét mã sản phẩm;
+  
+  |Hệ thống (System)|
+  :Xác thực mã sản phẩm;
+  
+  if (Sản phẩm đã tồn tại?) then (Có)
+    :Cập nhật số lượng tồn kho;
+  else (Không)
+    :Tạo mã SKU mới;
+    :Thêm sản phẩm vào cơ sở dữ liệu;
+  endif
+  
+  :Gợi ý vị trí lưu trữ tối ưu;
+  
+  |Nhân viên kho (Warehouse Staff)|
+  :Đặt sản phẩm vào vị trí được gợi ý;
+  :Xác nhận vị trí lưu trữ;
+  
+  |Hệ thống (System)|
+  :Cập nhật vị trí lưu trữ trong hệ thống;
+  :Gửi thông báo cập nhật kho thành công;
+else (Không)
+  |Nhân viên kho (Warehouse Staff)|
+  :Lập biên bản sản phẩm lỗi/không đạt;
+  :Thông báo cho nhà cung cấp;
+  
+  |Quản lý kho (Warehouse Manager)|
+  :Xử lý yêu cầu trả hàng;
+endif
+stop
+@enduml

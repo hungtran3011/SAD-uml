@@ -1,0 +1,25 @@
+@startuml Storage Management Overview
+start
+:Quy trình nhập kho;
+note right
+  Chi tiết trong "receiving_process.puml"
+end note
+
+:Quy trình quản lý tồn kho;
+note right
+  Chi tiết trong "inventory_management.puml"
+end note
+
+fork
+  :Quy trình kiểm kê định kỳ;
+  note right
+    Chi tiết trong "inventory_audit.puml"
+  end note
+fork again
+  :Quy trình xuất kho;
+  note right
+    Chi tiết trong "order_fulfillment.puml"
+  end note
+end fork
+stop
+@enduml
