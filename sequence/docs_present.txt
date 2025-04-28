@@ -1,0 +1,62 @@
+# Thiết kế quản lý đơn hàng
+
+## 1. Tổng quan
+
+### Mục tiêu
+- Xây dựng quản lý đơn hàng cho nhân viên (Staff)
+- Đảm bảo tính ổn định, bảo mật và khả năng mở rộng
+### Chức năng chính
+- Xem danh sách đơn hàng
+- Xem chi tiết đơn hàng
+- Cập nhật trạng thái đơn hàng
+- Thêm ghi chú cho đơn hàng
+## 2. Kiến trúc tổng thể
+
+### Các thành phần chính
+- **Giao diện người dùng:** Admin UI
+- **API Gateway:** Xử lý xác thực và định tuyến
+- **Microservices:** OrderService, AuthService, InventoryService, PaymentService
+- **Cơ sở dữ liệu:** OrderDB, UserDB
+- **Dịch vụ hỗ trợ:** NotificationService
+
+## 3. Luồng xử lý - Xem danh sách đơn hàng
+
+### Quy trình
+1. Nhân viên truy cập trang danh sách đơn hàng
+2. Hệ thống xác thực quyền truy cập
+3. Hệ thống truy xuất danh sách đơn hàng theo bộ lọc
+4. Hiển thị kết quả dạng bảng với phân trang
+
+### Đặc điểm kỹ thuật
+- Endpoint: GET /admin/orders?page=1&size=20&filters
+- Hỗ trợ lọc theo trạng thái, ngày tạo, khách hàng
+- Phân trang server-side
+
+## 4. Luồng xử lý - Xem chi tiết đơn hàng
+
+### Quy trình
+1. Nhân viên chọn một đơn hàng cụ thể
+2. Hệ thống xác thực quyền truy cập
+3. Hệ thống truy xuất thông tin chi tiết của đơn hàng
+4. Hiển thị thông tin đơn hàng
+
+### Dữ liệu hiển thị
+- Thông tin cơ bản: mã đơn, ngày tạo, trạng thái
+- Danh sách sản phẩm: tên, số lượng, đơn giá
+- Thông tin khách hàng: tên, địa chỉ, số điện thoại
+- Lịch sử trạng thái và ghi chú
+
+## 5. Luồng xử lý - Cập nhật trạng thái đơn
+
+### Quy trình
+1. Nhân viên chọn trạng thái mới cho đơn hàng
+2. Hệ thống kiểm tra tính hợp lệ của chuyển đổi trạng thái
+3. Hệ thống cập nhật trạng thái và xử lý nghiệp vụ liên quan
+4. Thông báo kết quả cho nhân viên và khách hàng
+
+### Xử lý nghiệp vụ theo trạng thái
+- **Shipped:** Trừ kho hàng, ghi nhận thời gian giao
+- **Cancelled:** Xử lý hoàn tiền, cập nhật kho hàng
+- **Delivered:** Cập nhật thời gian hoàn thành
+
+### Biểu đồ Sequence
