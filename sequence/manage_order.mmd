@@ -1,0 +1,43 @@
+@startuml
+title Manage Order (Staff)
+
+actor Staff
+participant "Admin UI" as UI
+participant "OrderController" as OC
+participant "OrderService" as OS
+database  "OrderDB" as DB
+participant "InventoryService" as IS
+participant "PaymentService" as PS
+participant "NotificationService" as NS
+
+== 1. View order list ==
+Staff -> UI : mở Orders Dashboard
+UI    -> OC : getOrders()
+OC    -> OS : listOrders()
+OS    -> DB : SELECT * FROM orders
+DB   --> OS : orderList
+OS   --> OC : orderList
+OC   --> UI : render(orderList)
+UI   --> Staff : hiển thị bảng đơn
+
+== 2. Update State ==
+Staff -> UI : chọn đơn & đổi status
+UI    -> OC : updateStatus(id, status)
+OC    -> OS : updateOrder(id, status)
+OS    -> DB : UPDATE orders SET status=…
+DB   --> OS : success
+
+alt status == Shipped
+  OS -> IS : deductStock(id)
+end
+
+alt status == Cancelled
+  OS -> PS : refundPayment(id)
+end
+
+OS -> NS : notifyUser(id, status)
+NS --> OS : queued
+OS --> OC : done
+OC --> UI : hiển thị “Cập nhật thành công”
+UI --> Staff : thông báo kết quả
+@enduml
