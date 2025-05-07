@@ -1,0 +1,79 @@
+@startuml
+
+' Hide empty fields for cleaner diagram
+hide empty members
+
+' USER CLASS
+class User {
+  - _id: String
+  - name: String
+  - email: String
+  - phoneNumber: String
+  - address: String
+  - role: String
+  - isRegistered: Boolean
+  - password: String
+  - createdAt: Date
+  - updatedAt: Date
+  - currentCartId: String
+  - userImageUrl: String
+
+  + register(name: String, email: String, password: String): Boolean
+  + login(email: String, password: String): Boolean
+  + logout(): void
+  + updateInformation(name: String, phoneNumber: String, address: String, password: String, userImageUrl: String): void
+  + getOrderHistory(): List<ORDER>
+  + getCurrentCart(): CART
+  + addToCart(productId: String, quantity: Integer): void
+  + removeFromCart(cartItemId: String): void
+  + updateCartItemQuantity(cartItemId: String, quantity: Number): void
+  + placeOrderFromCart(): ORDER
+  + getReviews(): List<Review>
+  + addReview(productId: String, rating: Number, comment: String)
+}
+
+' PRODUCT CLASS
+class Product {
+  - _id: String
+  - name: String
+  - description: String
+  - price: Float
+  - categoryId: String
+  - fieldValues: List<PRODUCT_FIELD_VALUE>
+  - createdById: String
+  - createdAt: Date
+  - updatedAt: Date
+
+  + updateDetails(name: String, description: String, price: String, categoryId: String, fieldValues: List<PRODUCT_FIELD_VALUE>): void
+  + getReviews(): List<REVIEW>
+  + caculateAverageRating(): Float
+}
+
+' ORDER CLASS
+class Order {
+  - _id: String
+  - userId: String
+  - orderItemIds: List<ORDER_ITEM>
+  - status: String
+  - shippingAddress: String
+  - payment: paymentMethod
+  - totalAmount: Float
+  - shipment: Shipment
+  - discountAmount: Float
+  - finalAmount: Float
+  - createdAt: Date
+  - updatedAt: Date
+
+  + getUser(): User
+  + getOrderItems(): List<ORDER_ITEM>
+  + getShipments(): List<Shipment>
+  + getPayments(): List<paymentMethod>
+  + calculateTotal(): void
+}
+
+' Relationships
+User "1" --> "0..*" Order
+User "1" --> "0..*" Product : manages
+User "1" --> "1" Product : places
+
+@enduml
