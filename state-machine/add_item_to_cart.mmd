@@ -1,0 +1,17 @@
+stateDiagram
+    [*] --> Đang_xem_sản_phẩm: Người dùng duyệt sản phẩm
+
+    Đang_xem_sản_phẩm --> Kiểm_tra_tồn_kho: Chọn "Thêm vào giỏ hàng"
+
+    state Kiểm_tra_tồn_kho <<choice>>
+        Ghi_chú_Kiểm_tra: "Hệ thống kiểm tra số lượng tồn kho của sản phẩm"
+        Kiểm_tra_tồn_kho --> Sản_phẩm_đã_thêm_vào_giỏ: [Còn hàng]
+        Kiểm_tra_tồn_kho --> Thông_báo_hết_hàng: [Hết hàng]
+
+    Thông_báo_hết_hàng --> Đang_xem_sản_phẩm: Người dùng tìm sản phẩm khác / Đóng thông báo
+
+    Sản_phẩm_đã_thêm_vào_giỏ --> Giỏ_hàng: Hiển thị thông báo thành công
+
+
+
+    Giỏ_hàng --> Đang_xem_sản_phẩm: Tiếp tục mua sắm
