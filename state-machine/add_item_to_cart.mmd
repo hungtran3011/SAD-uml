@@ -4,7 +4,7 @@ stateDiagram
     Đang_xem_sản_phẩm --> Kiểm_tra_tồn_kho: Chọn "Thêm vào giỏ hàng"
 
     state Kiểm_tra_tồn_kho <<choice>>
-        Ghi_chú_Kiểm_tra: "Hệ thống kiểm tra số lượng tồn kho của sản phẩm"
+        note right of Kiểm_tra_tồn_kho: Hệ thống kiểm tra số lượng tồn kho của sản phẩm
         Kiểm_tra_tồn_kho --> Sản_phẩm_đã_thêm_vào_giỏ: [Còn hàng]
         Kiểm_tra_tồn_kho --> Thông_báo_hết_hàng: [Hết hàng]
 
