@@ -1,0 +1,81 @@
+@startuml Đăng nhập tài khoản
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Auth UI" as UI #palegreen
+control "AuthController" as AC #gold
+control "AuthService"    as AS #lightsteelblue
+entity  "UserService"    as US #pink
+database "USER"          as DB #lightgray
+
+
+== 1. Nhập thông tin đăng nhập ==
+User -> UI : Nhập email, password
+activate UI
+UI -> AC : login(email, password)
+deactivate UI
+
+== 2. Xác thực thông tin ==
+AC -> AS : verifyCredentials(email, password)
+activate AS
+AS -> US : findUserByEmail(email)
+activate US
+US -> DB : findOne({email:email})
+activate DB
+DB --> US : userDocument or null
+deactivate DB
+US --> AS : userDocument
+deactivate US
+
+alt Email không tồn tại
+    AS --> AC : userNotFound
+    deactivate AS
+    AC --> UI : <color:red>Email không tồn tại</color>
+    deactivate AC
+    UI --> User : Hiển thị lỗi
+else Email tồn tại
+    AS -> AS : checkPassword(password, userDocument.passwordHash)
+    AS --> AC : passwordValid
+    AS --> AC : userDocument
+    deactivate AS
+
+    alt Mật khẩu không đúng
+        AC --> UI : <color:red>Mật khẩu không đúng</color>
+        deactivate AC
+        UI --> User : Hiển thị lỗi
+
+    else Tài khoản chưa kích hoạt
+        AC --> UI : <color:red>Tài khoản chưa được kích hoạt</color>
+        deactivate AC
+        UI --> User : Hiển thị lỗi
+
+    else Xác thực thành công
+        AC -> AC : generateJWT(user.id, user.role)
+        AC -> US : updateLastLogin(user.id)
+        activate US
+        ' **SỬA** chỉ còn 1 dòng label cho update
+        US -> DB : update({ _id:user.id },{$set:{lastLogin:now}})
+        activate DB
+        DB --> US : success
+        deactivate DB
+        US --> AC : updateResult
+        deactivate US
+
+        AC --> UI : {token, userData}
+        deactivate AC
+        UI -> UI : storeJWT(token)
+
+        alt user.role == "admin"
+            UI --> User : Chuyển hướng Admin Dashboard
+        else user.role == "staff"
+            UI --> User : Chuyển hướng Staff Dashboard
+        else
+            UI --> User : Chuyển hướng User Dashboard
+        end
+        deactivate UI
+    end
+end
+@enduml
