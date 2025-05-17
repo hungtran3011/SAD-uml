@@ -1,0 +1,41 @@
+@startuml Quản lý giỏ hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "ProductService" as PS #lightsteelblue
+database "DATABASE" as DB #lightgray
+
+== Thêm vào giỏ hàng ==
+User -> UI : Thêm vào giỏ hàng
+activate UI
+UI -> OC : addToCart(productId, quantity)
+activate OC
+OC -> PS : checkInventory(productId, quantity)
+activate PS
+PS -> DB : findOne({_id: productId})
+activate DB
+DB --> PS : productDocument
+deactivate DB
+PS --> OC : inventoryStatus
+deactivate PS
+
+alt Hết hàng
+    OC --> UI : <color:red>inventoryError</color>
+    UI --> User : Thông báo sản phẩm hết hàng
+else Còn hàng
+    OC -> OC : updateCart(userId, productId, quantity)
+    OC -> DB : updateOne({userId: userId}, {$push: {cartItems: item}})
+    activate DB
+    DB --> OC : updateResult
+    deactivate DB
+    OC --> UI : cartUpdated
+    UI --> User : Xác nhận thêm vào giỏ
+end
+deactivate OC
+deactivate UI
+@enduml

@@ -1,0 +1,52 @@
+@startuml Hoạt động sau mua hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "OrderService" as OS #pink
+entity "ProductService" as PS #lightsteelblue
+database "DATABASE" as DB #lightgray
+
+== Hoạt động sau mua hàng ==
+alt Đã đăng nhập
+    User -> UI : Đánh giá sản phẩm
+    activate UI
+    UI -> OC : submitReview(productId, rating, comment)
+    activate OC
+    OC -> PS : saveReview(productId, userId, rating, comment)
+    activate PS
+    PS -> DB : update({_id: productId}, {$push: {reviews: ...}})
+    activate DB
+    DB --> PS : reviewSaved
+    deactivate DB
+    PS --> OC : reviewProcessed
+    deactivate PS
+    OC --> UI : reviewConfirmation
+    deactivate OC
+    UI --> User : Xác nhận đánh giá
+    deactivate UI
+end
+
+alt Trả/Đổi hàng
+    User -> UI : Yêu cầu trả/đổi hàng
+    activate UI
+    UI -> OC : requestReturn(orderId, reason)
+    activate OC
+    OC -> OS : createReturnRequest(orderId, reason)
+    activate OS
+    OS -> DB : insert(returnDocument)
+    activate DB
+    DB --> OS : returnCreated
+    deactivate DB
+    OS --> OC : returnInitiated
+    deactivate OS
+    OC --> UI : returnInstructions
+    deactivate OC
+    UI --> User : Hướng dẫn quy trình trả/đổi hàng
+    deactivate UI
+end
+@enduml

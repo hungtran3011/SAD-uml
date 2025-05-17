@@ -1,0 +1,100 @@
+@startuml Vận chuyển và giao hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "OrderService" as OS #pink
+entity "ShippingService" as SS #wheat
+control "PaymentGateway" as PG #coral
+database "DATABASE" as DB #lightgray
+
+== Vận chuyển ==
+activate OC
+OC -> SS : createShippingOrder(orderId, shippingDetails)
+activate SS
+SS -> DB : insert(shippingDocument)
+activate DB
+DB --> SS : shippingCreated
+deactivate DB
+SS --> OC : shippingDetails
+deactivate SS
+OC --> UI : trackingInfo
+activate UI
+UI --> User : Hiển thị chi tiết vận đơn
+deactivate UI
+deactivate OC
+
+loop Cập nhật trạng thái
+    SS -> OC : updateOrderStatus(orderId, status)
+    activate SS
+    activate OC
+    OC -> OS : updateStatus(orderId, status)
+    activate OS
+    OS -> DB : update({_id: orderId}, {$set: {status: status}})
+    activate DB
+    DB --> OS : updateResult
+    deactivate DB
+    OS --> OC : statusUpdated
+    deactivate OS
+    OC -> OC : notifyUser(userId, statusUpdate)
+    OC --> User : Thông báo cập nhật trạng thái
+    deactivate OC
+    deactivate SS
+end
+
+alt COD
+    SS -> User : Vận chuyển đơn hàng
+    activate SS
+    
+    alt Giao hàng thành công
+        User -> SS : Trả tiền sau khi nhận hàng
+        SS -> OC : confirmDelivery(orderId, "paid")
+        activate OC
+    else Từ chối nhận hàng
+        User -> SS : Từ chối nhận hàng
+        SS -> OC : reportDeliveryFailure(orderId, reason)
+        activate OC
+    end
+    deactivate SS
+    
+else Thanh toán trực tuyến
+    SS -> User : Vận chuyển đơn hàng (đã thanh toán)
+    activate SS
+    
+    alt Giao hàng thành công
+        SS -> OC : confirmDelivery(orderId)
+        activate OC
+    else Từ chối nhận hàng
+        User -> SS : Từ chối nhận hàng
+        SS -> OC : reportDeliveryFailure(orderId, reason)
+        activate OC
+        OC -> PG : processRefund(transactionId)
+        activate PG
+        deactivate PG
+    end
+    deactivate SS
+end
+
+OC -> OS : finalizeOrder(orderId, status)
+activate OS
+OS -> DB : update({_id: orderId}, {$set: {status: status, ...}})
+activate DB
+DB --> OS : updateResult
+deactivate DB
+OS --> OC : orderFinalized
+deactivate OS
+
+alt Giao hàng thành công
+    OC --> UI : deliveryConfirmed
+    activate UI
+    UI --> User : Thông báo giao hàng thành công
+    deactivate UI
+    OC -> OC : sendDeliveryConfirmationEmail(email, orderDetails)
+    OC --> User : Gửi email xác nhận giao hàng
+    deactivate OC
+end
+@enduml

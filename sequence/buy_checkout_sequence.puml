@@ -1,0 +1,92 @@
+@startuml Thanh toán đơn hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "OrderService" as OS #pink
+control "PaymentGateway" as PG #coral
+database "DATABASE" as DB #lightgray
+
+== Thanh toán ==
+User -> UI : Đi tới giỏ hàng và thanh toán
+activate UI
+UI -> OC : checkout()
+activate OC
+OC -> OS : getCartDetails(userId)
+activate OS
+OS -> DB : findOne({userId: userId})
+activate DB
+DB --> OS : cartDocument
+deactivate DB
+OS --> OC : cartDetails
+deactivate OS
+OC --> UI : orderSummary
+UI --> User : Hiển thị thông tin đơn hàng
+
+alt Không đăng nhập (Mua hàng nhanh)
+    UI --> User : Yêu cầu nhập thông tin giao hàng và liên hệ
+    User -> UI : Nhập thông tin giao hàng (Tên, SĐT, Email, Địa chỉ)
+    UI -> OC : validateShippingInfo(shippingInfo)
+    OC --> UI : validationResult
+    UI --> User : Xác nhận thông tin và hiển thị lựa chọn thanh toán
+else Đã đăng nhập
+    UI -> OC : getUserShippingInfo(userId)
+    OC -> OS : getShippingInfo(userId)
+    activate OS
+    OS -> DB : findOne({userId: userId})
+    activate DB
+    DB --> OS : userShippingInfo
+    deactivate DB
+    OS --> OC : shippingInfo
+    deactivate OS
+    OC --> UI : shippingInfo
+    UI --> User : Hiển thị thông tin giao hàng đã lưu
+    User -> UI : Xác nhận hoặc thay đổi thông tin
+    UI -> OC : updateShippingInfo(userId, shippingInfo)
+    OC --> UI : updateConfirmation
+    UI --> User : Hiển thị lựa chọn thanh toán
+end
+
+User -> UI : Lựa chọn hình thức thanh toán
+
+alt Thanh toán trực tuyến
+    UI -> OC : processOnlinePayment(paymentDetails)
+    OC -> PG : processPayment(amount, paymentDetails)
+    activate PG
+    
+    alt Thanh toán thất bại
+        PG --> OC : <color:red>paymentError</color>
+        OC --> UI : <color:red>paymentError</color>
+        UI --> User : Thông báo lỗi và yêu cầu thử lại
+    else Thanh toán thành công
+        PG --> OC : paymentConfirmed
+        OC --> UI : paymentSuccess
+        UI --> User : Thông báo thanh toán thành công
+    end
+    deactivate PG
+    
+else Thanh toán trực tiếp (COD)
+    UI -> OC : processCODPayment()
+    OC --> UI : codConfirmed
+    UI --> User : Xác nhận chọn COD
+end
+
+OC -> OS : createOrder(orderDetails)
+activate OS
+OS -> DB : insert(orderDocument)
+activate DB
+DB --> OS : orderCreated
+deactivate DB
+OS --> OC : orderCreationResult
+deactivate OS
+OC --> UI : orderDetails
+UI --> User : Hiển thị chi tiết đơn hàng
+OC -> OC : sendOrderConfirmationEmail(email, orderDetails)
+OC --> User : Gửi email xác nhận đơn hàng
+deactivate OC
+deactivate UI
+@enduml

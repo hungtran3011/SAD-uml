@@ -1,0 +1,73 @@
+@startuml Quản lý hủy đơn hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "OrderService" as OS #pink
+control "PaymentGateway" as PG #coral
+database "DATABASE" as DB #lightgray
+
+== Quản lý đơn hàng ==
+alt Hủy đơn (Trong khoảng thời gian cho phép)
+    User -> UI : Yêu cầu hủy đơn hàng
+    activate UI
+    
+    alt Không đăng nhập
+        UI --> User : Yêu cầu nhập mã đơn hàng và email xác nhận
+        User -> UI : Nhập thông tin xác nhận
+        UI -> OC : verifyOrderAccess(orderCode, email)
+        activate OC
+        OC -> OS : verifyOrderOwnership(orderCode, email)
+        activate OS
+        OS -> DB : findOne({code: orderCode, email: email})
+        activate DB
+        DB --> OS : orderDocument
+        deactivate DB
+        OS --> OC : verificationResult
+        deactivate OS
+    else Đã đăng nhập
+        UI -> OC : verifyOrderAccess(userId, orderId)
+        activate OC
+        OC -> OS : verifyOrderOwnership(userId, orderId)
+        activate OS
+        OS -> DB : findOne({_id: orderId, userId: userId})
+        activate DB
+        DB --> OS : orderDocument
+        deactivate DB
+        OS --> OC : verificationResult
+        deactivate OS
+    end
+    
+    OC --> UI : cancellationForm
+    UI --> User : Yêu cầu lý do hủy đơn
+    User -> UI : Nhập lý do hủy và xác nhận hủy đơn hàng
+    UI -> OC : cancelOrder(orderId, reason)
+    OC -> OS : updateOrderStatus(orderId, "cancelled", reason)
+    activate OS
+    OS -> DB : update({_id: orderId}, {$set: {status: "cancelled", ...}})
+    activate DB
+    DB --> OS : updateResult
+    deactivate DB
+    OS --> OC : cancellationResult
+    deactivate OS
+    
+    alt Đã thanh toán online
+        OC -> PG : requestRefund(transactionId)
+        activate PG
+        PG --> OC : refundInitiated
+        OC --> UI : refundStatus
+        UI --> User : Thông báo trạng thái hoàn tiền
+        PG --> User : Hoàn tiền
+        deactivate PG
+    end
+    
+    OC -> OC : sendCancellationEmail(email, orderDetails)
+    OC --> User : Gửi email xác nhận hủy đơn
+    deactivate OC
+    deactivate UI
+end
+@enduml

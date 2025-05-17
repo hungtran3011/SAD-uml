@@ -1,0 +1,57 @@
+@startuml Tổng quan quy trình mua hàng
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FFFFFF
+skinparam transparentBackground false
+
+actor "User" as User #lightblue
+boundary "Shop UI" as UI #palegreen
+control "OrderController" as OC #gold
+entity "ProductService" as PS #lightsteelblue
+entity "OrderService" as OS #pink
+control "PaymentGateway" as PG #coral
+entity "ShippingService" as SS #wheat
+database "DATABASE" as DB #lightgray
+
+== Duyệt và chọn sản phẩm ==
+User -> UI : Tìm kiếm và thêm vào giỏ hàng
+activate UI
+UI -> PS : Kiểm tra tồn kho
+activate PS
+PS --> UI : Trạng thái tồn kho
+deactivate PS
+UI --> User : Xác nhận thêm vào giỏ
+deactivate UI
+
+== Thanh toán ==
+User -> UI : Tiến hành thanh toán
+activate UI
+UI -> OC : Xử lý thanh toán
+activate OC
+OC -> PG : Thực hiện thanh toán
+activate PG
+PG --> OC : Kết quả thanh toán
+deactivate PG
+OC -> OS : Tạo đơn hàng
+activate OS
+OS --> OC : Kết quả đơn hàng
+deactivate OS
+OC --> User : Xác nhận đơn hàng
+deactivate OC
+deactivate UI
+
+== Vận chuyển và giao hàng ==
+SS -> User : Vận chuyển đơn hàng
+User -> SS : Nhận hàng
+SS -> OC : Cập nhật trạng thái giao hàng
+activate OC
+OC --> User : Xác nhận giao hàng
+deactivate OC
+
+== Hoạt động sau mua hàng ==
+User -> UI : Đánh giá / Yêu cầu trả hàng
+activate UI
+UI --> User : Xác nhận thao tác
+deactivate UI
+
+@enduml
