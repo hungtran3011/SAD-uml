@@ -1,0 +1,51 @@
+@startuml
+class Customer {
+  - id: String
+  - name: String
+  - email: String
+  + placeOrder(order: Order): void
+}
+
+class Order {
+  - id: String
+  - totalAmount: Float
+  - status: String
+  + makePayment(payment: Payment): void
+  + updateStatus(status: String): void
+}
+
+class Payment {
+  - id: String
+  - amount: Float
+  - date: Date
+  + process(): Boolean
+}
+
+class PaymentMethod {
+  <<interface>>
+  + pay(amount: Float): Boolean
+}
+
+class CreditCard {
+  - cardNumber: String
+  - holderName: String
+  + pay(amount: Float): Boolean
+}
+
+class Cash {
+  + pay(amount: Float): Boolean
+}
+
+class EWallet {
+  - walletId: String
+  + pay(amount: Float): Boolean
+}
+
+' Relationships
+Customer "1" --> "0..*" Order : places
+Order "1" *-- "1" Payment : includes
+Payment "1" --> "1" PaymentMethod : uses
+PaymentMethod <|.. CreditCard
+PaymentMethod <|.. Cash
+PaymentMethod <|.. EWallet
+@enduml
