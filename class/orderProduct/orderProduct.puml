@@ -1,0 +1,52 @@
+@startuml
+class User {
+  - id: String
+  - name: String
+  - email: String
+  - phoneNumber: String
+  - address: String
+  + placeOrder(items: List<OrderItem>, shippingAddress: String, paymentDetails: String): Order
+}
+
+class Product {
+  - id: String
+  - name: String
+  - description: String
+  - price: Float
+}
+
+class OrderItem {
+  - quantity: Integer
+  - note: String
+  - unitPrice: Float
+  - deliveryDate: Date
+  - deliveryFee: Float
+  + calculateSubtotal(): Float
+}
+
+class Order {
+  - id: String
+  - shippingAddress: String
+  - paymentDetails: String
+  - status: String
+  - totalAmount: Float
+  + calculateTotal(): Float
+  + updateStatus(newStatus: String): void
+}
+
+class Voucher {
+  - id: String
+  - name: String
+  - discount: Float
+  - startDate: Date
+  - endDate: Date
+  + isValid(): Boolean
+  + applyDiscount(amount: Float): Float
+}
+
+' Relationships
+User "1" --> "0..*" Order : places
+Order "1" *-- "1..*" OrderItem : contains
+OrderItem "1" --> "1" Product : references
+OrderItem "0..1" --> "1" Voucher : applies
+@enduml

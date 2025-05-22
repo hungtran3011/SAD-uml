@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> Đang_vận_chuyển: Từ xử lý đơn/thanh toán
+    
+    state Đang_vận_chuyển {
+        [*] --> Đang_chuẩn_bị_hàng
+        Đang_chuẩn_bị_hàng --> Đang_giao_hàng: Bàn giao cho vận chuyển
+    }
+    
+    Đang_vận_chuyển --> Giao_thành_công: Xác nhận giao hàng
+    Đang_vận_chuyển --> Bị_hủy: Từ chối nhận hàng
+    Đang_vận_chuyển --> Trả_hàng: Yêu cầu đổi trả
+    
+    Giao_thành_công --> Đã_hoàn_thành: Sau khi nhận hàng
+    
+    Bị_hủy --> Đang_hoàn_tiền: Đã thanh toán online
+    Bị_hủy --> [*]: Không cần hoàn tiền

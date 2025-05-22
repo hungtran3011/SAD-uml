@@ -1,0 +1,37 @@
+@startuml
+class Order {
+  - id: String
+  - shippingAddress: String
+  - status: String
+  + updateStatus(status: String): void
+}
+
+class Shipment {
+  - id: String
+  - trackingNumber: String
+  - estimatedDelivery: Date
+  - status: String
+  + updateStatus(newStatus: String): void
+  + assignShipper(shipper: Shipper): void
+}
+
+class Shipper {
+  - id: String
+  - name: String
+  - phoneNumber: String
+  + updateLocation(location: String): void
+  + confirmDelivery(): Boolean
+}
+
+class DeliveryStatus {
+  - timestamp: Date
+  - status: String
+  - location: String
+  + getInfo(): String
+}
+
+' Relationships
+Order "1" --> "1" Shipment : assigned
+Shipment "1" --> "1" Shipper : handled by
+Shipment "1" *-- "0..*" DeliveryStatus : tracks
+@enduml

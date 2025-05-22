@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> Giỏ_hàng: Thêm sản phẩm
+
+    state Giỏ_hàng {
+        [*] --> Chờ_thanh_toán
+        Chờ_thanh_toán --> [*]: Hủy giỏ hàng
+    }
+    
+    Giỏ_hàng --> Đang_xử_lý: Xác nhận đặt hàng
+    Giỏ_hàng --> Bị_hủy: Người dùng hủy
+    
+    Bị_hủy --> [*]

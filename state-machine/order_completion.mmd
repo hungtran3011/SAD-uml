@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> Đã_hoàn_thành: Từ giao thành công
+    
+    state Đã_hoàn_thành {
+        [*] --> Chờ_đánh_giá
+        Chờ_đánh_giá --> Đã_đánh_giá: Người dùng đánh giá
+    }
+    
+    Đã_hoàn_thành --> [*]
