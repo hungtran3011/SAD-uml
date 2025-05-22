@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> Đang_thanh_toán: Từ đang xử lý
+    
+    state Đang_thanh_toán {
+        [*] --> Chờ_thanh_toán_online: Chọn thanh toán online
+        Chờ_thanh_toán_online --> Thanh_toán_thành_công: Xác nhận từ cổng thanh toán
+        Chờ_thanh_toán_online --> Thanh_toán_thất_bại: Lỗi thanh toán
+        Thanh_toán_thất_bại --> Chờ_thanh_toán_online: Thử lại
+    }
+    
+    Đang_thanh_toán --> Đang_vận_chuyển: Sau khi thanh toán thành công

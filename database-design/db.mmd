@@ -1,131 +1,150 @@
 erDiagram
     USER {
-        ObjectId _id PK
-        string name
-        string email
-        string phoneNumber
-        object address
-        string role
-        boolean isRegistered
-        string password
-        date createdAt
-        date updatedAt
-        string profileImage
+        _id ObjectId PK
+        name string
+        email string
+        phoneNumber string
+        address object
+        role string
+        isRegistered boolean
+        password string
+        createdAt date
+        updatedAt date
+        profileImage string
     }
 
-    ADMIN
+    ADMIN {
+
+    }
     
     CATEGORY {
-        ObjectId _id PK
-        string name
-        string description
-        array fields
-        ObjectId createdBy FK
+        _id ObjectId PK
+        name string
+        description string
+        fields array
+        createdBy ObjectId FK
     }
     
     FIELD_DEFINITION {
-        string name
-        string type
-        boolean required
+        name string
+        type string
+        required boolean
     }
     
     PRODUCT {
-        ObjectId _id PK
-        string name
-        string description
-        number price
-        ObjectId category FK
-        array fieldValues
-        ObjectId createdBy FK
-        date createdAt
-        date updatedAt
+        _id ObjectId PK
+        name string
+        description string
+        price number
+        category ObjectId FK
+        fieldValues array
+        createdBy ObjectId FK
+        createdAt date
+        updatedAt date
+        quantity number
     }
     
     PRODUCT_FIELD_VALUE {
-        string name
-        mixed value
+        name string
+        value mixed
     }
     
     CART {
-        ObjectId _id PK
-        array items
-        ObjectId user FK
-        date createdAt
-        date updatedAt
+        _id ObjectId PK
+        %% items array
+        user ObjectId FK
+        createdAt date
+        updatedAt date
     }
     
     CART_ITEM {
-        ObjectId product FK
-        number quantity
+        product ObjectId FK
+        quantity number
     }
     
     ORDER {
-        ObjectId _id PK
-        array items
-        ObjectId user FK
-        string status
-        object shippingAddress
-        object paymentDetails
-        number totalAmount
-        date createdAt
-        date updatedAt
+        _id ObjectId PK
+        items array
+        user ObjectId FK
+        status string
+        shippingAddress object
+        paymentDetails object
+        totalAmount number
+        createdAt date
+        updatedAt date
     }
     
     ORDER_ITEM {
-        ObjectId product FK
-        number quantity
-        string voucher
-        string note
-        number unitPrice
-        date deliveryDate
-        number deliveryFee
+        product ObjectId FK
+        quantity number
+        voucher string
+        note string
+        unitPrice number
+        deliveryDate date
+        deliveryFee number
     }
     
-    STORAGE {
-        ObjectId _id PK
-        array items
-        date createdAt
-        date updatedAt
-    }
+    %% STORAGE {
+    %%     _id ObjectId PK
+    %%     items array
+    %%     createdAt date
+    %%     updatedAt date
+    %% }
     
-    STORAGE_ITEM {
-        ObjectId product FK
-        number quantity
-        date createdAt
-        date updatedAt
-    }
+    %% STORAGE_ITEM {
+    %%     product ObjectId FK
+    %%     quantity number
+    %%     createdAt date
+    %%     updatedAt date
+    %% }
 
     VOUCHER {
-        ObjectId _id PK
-        string name
-        string description
-        number discount
-        date startDate
-        date endDate
-        ObjectId createdBy FK
+        _id ObjectId PK
+        name string
+        description string
+        discount number
+        startDate date
+        endDate date
+        createdBy ObjectId FK
+    }
+    
+    PAYMENT_HISTORY {
+        _id ObjectId PK
+        order ObjectId FK
+        user ObjectId FK
+        amount number
+        paymentMethod string
+        status string
+        transactionId string
+        gatewayResponse string
+        isRefund boolean
+        refundedPayment ObjectId FK
+        paymentDate date
+        createdAt date
+        updatedAt date
     }
 
     ADMIN ||--|| USER: "is a"
-
-    ADMIN ||--o{ PRODUCT : "manages"
-    ADMIN ||--o{ CATEGORY : "manages"
-    ADMIN ||--o{ STORAGE : "manages"
     
     USER ||--o{ ORDER : "places"
     USER ||--o{ CART : "has"
+    USER ||--o{ PAYMENT_HISTORY : "makes"
     CATEGORY ||--o{ PRODUCT : "categorizes"
     CATEGORY }o--|| FIELD_DEFINITION : "contains"
     
     PRODUCT ||--o{ PRODUCT_FIELD_VALUE : "has"
     PRODUCT ||--o{ CART_ITEM : "referenced in"
     PRODUCT ||--o{ ORDER_ITEM : "referenced in"
-    PRODUCT ||--o{ STORAGE_ITEM : "stored as"
+    %% PRODUCT ||--o{ STORAGE_ITEM : "stored as"
     
     CART ||--o{ CART_ITEM : "contains"
     
     ORDER ||--o{ ORDER_ITEM : "contains"
+    ORDER ||--o{ PAYMENT_HISTORY : "has"
     
-    STORAGE ||--o{ STORAGE_ITEM : "contains"
+    %% STORAGE ||--o{ STORAGE_ITEM : "contains"
     VOUCHER ||--o{ ORDER_ITEM : "applies to"
     VOUCHER ||--o{ USER : "granted to"
     VOUCHER ||--o{ PRODUCT : "applies to"
+    
+    PAYMENT_HISTORY ||--o{ PAYMENT_HISTORY : "refunds"

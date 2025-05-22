@@ -1,0 +1,22 @@
+stateDiagram-v2
+    [*] --> Trả_hàng: Từ đang vận chuyển/giao thành công
+    
+    state Trả_hàng {
+        [*] --> Chờ_duyệt
+        Chờ_duyệt --> Đã_duyệt: Xác nhận
+        Chờ_duyệt --> Từ_chối: Từ chối yêu cầu
+    }
+    
+    Trả_hàng --> Đang_hoàn_tiền: Sau khi xác nhận
+    
+    state Đang_hoàn_tiền {
+        [*] --> Chờ_hoàn_tiền
+        Chờ_hoàn_tiền --> Hoàn_tiền_thành_công: Xác nhận từ cổng thanh toán
+        Chờ_hoàn_tiền --> Hoàn_tiền_thất_bại: Lỗi từ cổng thanh toán
+        Hoàn_tiền_thất_bại --> Chờ_hoàn_tiền: Thử lại
+    }
+    
+    Đang_hoàn_tiền --> Đã_hoàn_tiền: Xác nhận từ cổng thanh toán
+    
+    Đã_hoàn_tiền --> [*]
+    Từ_chối --> [*]
