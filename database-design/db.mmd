@@ -13,9 +13,7 @@ erDiagram
         profileImage string
     }
 
-    ADMIN {
-
-    }
+    %% `
     
     CATEGORY {
         _id ObjectId PK
@@ -24,12 +22,26 @@ erDiagram
         fields array
         createdBy ObjectId FK
     }
-    
-    FIELD_DEFINITION {
+
+    ROLE {
+        _id ObjectId PK
         name string
-        type string
-        required boolean
+        description string
+        createdBy ObjectId FK
     }
+
+    PERMISSION {
+        _id ObjectId PK
+        name string
+        description string
+        createdBy ObjectId FK
+    }
+    
+    %% FIELD_DEFINITION {
+    %%     name string
+    %%     type string
+    %%     required boolean
+    %% }
     
     PRODUCT {
         _id ObjectId PK
@@ -44,10 +56,10 @@ erDiagram
         quantity number
     }
     
-    PRODUCT_FIELD_VALUE {
-        name string
-        value mixed
-    }
+    %% PRODUCT_FIELD_VALUE {
+    %%     name string
+    %%     value mixed
+    %% }
     
     CART {
         _id ObjectId PK
@@ -124,27 +136,24 @@ erDiagram
         updatedAt date
     }
 
-    ADMIN ||--|| USER: "is a"
     
     USER ||--o{ ORDER : "places"
     USER ||--o{ CART : "has"
+    USER ||--|| ROLE : "has"
+    USER ||--o{ PERMISSION : "granted"
     USER ||--o{ PAYMENT_HISTORY : "makes"
     CATEGORY ||--o{ PRODUCT : "categorizes"
-    CATEGORY }o--|| FIELD_DEFINITION : "contains"
+    PAYMENT_HISTORY ||--o{ PAYMENT_HISTORY : "refunds"
     
-    PRODUCT ||--o{ PRODUCT_FIELD_VALUE : "has"
     PRODUCT ||--o{ CART_ITEM : "referenced in"
     PRODUCT ||--o{ ORDER_ITEM : "referenced in"
-    %% PRODUCT ||--o{ STORAGE_ITEM : "stored as"
     
     CART ||--o{ CART_ITEM : "contains"
     
     ORDER ||--o{ ORDER_ITEM : "contains"
     ORDER ||--o{ PAYMENT_HISTORY : "has"
     
-    %% STORAGE ||--o{ STORAGE_ITEM : "contains"
     VOUCHER ||--o{ ORDER_ITEM : "applies to"
     VOUCHER ||--o{ USER : "granted to"
     VOUCHER ||--o{ PRODUCT : "applies to"
     
-    PAYMENT_HISTORY ||--o{ PAYMENT_HISTORY : "refunds"
