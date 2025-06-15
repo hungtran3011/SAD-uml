@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Available: Admin thêm sản phẩm
+    Available --> InCart: Khách hàng thêm vào giỏ hàng
+    InCart --> Available: Khách hàng xóa khỏi giỏ hàng
+    InCart --> Reserved: Khách hàng đặt hàng
+    Reserved --> Sold: Thanh toán thành công
+    Sold --> Returned: Khởi tạo trả hàng
+    Returned --> Available: Admin đưa sản phẩm trở lại
+
+    %% Admin removes item from any state
+    Draft --> Removed: Admin xóa sản phẩm
+    Available --> Removed: Admin xóa sản phẩm
+    InCart --> Removed: Admin xóa sản phẩm
+    Reserved --> Removed: Admin xóa sản phẩm
+    Sold --> Removed: Admin xóa sản phẩm
+    Returned --> Removed: Admin xóa sản phẩm
+
+    Removed --> [*]
